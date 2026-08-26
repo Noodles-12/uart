@@ -42,28 +42,28 @@ module tx_fsm (
     end
 
     always_ff @(posedge clk or negedge rst_n) begin
-        if (!rst_n) begin
+        if(!rst_n) begin
             current_state <= IDLE;
             tx_shift_reg <= 8'b0;
             bit_count <= 4'b0;
             tx_busy <= 1'b0;
         end else begin
-            if (current_state == IDLE) begin
-                if (tx_start) begin
+            if(current_state == IDLE) begin
+                if(tx_start) begin
                     current_state <= START_BIT;
                     tx_shift_reg <= tx_data;
                     bit_count <= 4'b0;
                     tx_busy <= 1'b1;
                 end
-            end else if (tx_tick) begin
-                unique case (current_state)
+            end else if(tx_tick) begin
+                unique case(current_state)
                     START_BIT: begin
                         current_state <= DATA_BITS;
                     end
 
                     DATA_BITS: begin
                         bit_count <= bit_count + 1;
-                        if (bit_count == 4'd7) begin
+                        if(bit_count == 4'd7) begin
                             current_state <= STOP_BIT;
                         end
                     end
@@ -80,7 +80,7 @@ module tx_fsm (
     end
 
     always_comb begin
-        case (current_state)
+        case(current_state)
             IDLE:       tx = 1'b1;
             START_BIT:  tx = 1'b0;
             DATA_BITS:  tx = tx_shift_reg[bit_count];
